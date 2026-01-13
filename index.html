@@ -4,36 +4,617 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuat Labs | High-Performance ML Infrastructure</title>
+    <meta name="description" content="Quattree: 4x faster ML training throughput. Drop-in replacement for PyTorch DataLoader built in Rust.">
+    <meta name="keywords" content="ML infrastructure, data loading, PyTorch, NVIDIA DALI, machine learning, deep learning, GPU utilization">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="Kuat Labs | High-Performance ML Infrastructure">
+    <meta property="og:description" content="Quattree: 4x faster ML training throughput. Drop-in replacement for PyTorch DataLoader.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kuatlabs.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    
     <style>
-        body { font-family: 'Courier New', Courier, monospace; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; color: #333; }
-        h1 { border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .highlight { background-color: #eee; padding: 2px 5px; font-weight: bold; }
-        a { color: #000; text-decoration: underline; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0a0a0a;
+            --accent: #2563eb;
+            --accent-light: #3b82f6;
+            --gray-50: #fafafa;
+            --gray-100: #f4f4f5;
+            --gray-200: #e4e4e7;
+            --gray-400: #a1a1aa;
+            --gray-600: #52525b;
+            --gray-800: #27272a;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Navigation */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--gray-800);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--gray-400);
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: white;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--gray-100);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 24px;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Stats */
+        .stats {
+            padding: 60px 0;
+            background: var(--primary);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-item p {
+            color: var(--gray-400);
+            font-size: 0.95rem;
+        }
+        
+        /* Features */
+        .features {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .section-header p {
+            color: var(--gray-600);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .feature-card {
+            padding: 32px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--gray-400);
+            transform: translateY(-2px);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+        
+        /* Code Block */
+        .code-section {
+            padding: 80px 0;
+            background: var(--gray-100);
+        }
+        
+        .code-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .code-block {
+            background: var(--primary);
+            border-radius: 12px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            color: #e4e4e7;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+        
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #4ade80; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .number { color: #fbbf24; }
+        
+        /* Team */
+        .team {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .team-card {
+            text-align: center;
+            padding: 32px;
+        }
+        
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .team-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+        
+        .team-card .role {
+            color: var(--accent);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .team-card p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        /* CTA */
+        .cta {
+            padding: 80px 0;
+            background: var(--primary);
+            text-align: center;
+            color: white;
+        }
+        
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .cta p {
+            color: var(--gray-400);
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .cta .btn-primary:hover {
+            background: var(--gray-100);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .footer-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            color: var(--gray-400);
+            font-size: 0.85rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .code-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero {
+                padding: 60px 0 40px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Kuat Labs</h1>
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">K</div>
+                Kuat Labs
+            </a>
+            <div class="nav-links">
+                <a href="#benchmarks">Benchmarks</a>
+                <a href="#features">Features</a>
+                <a href="#team">Team</a>
+                <a href="mailto:kuatinc2026@gmail.com" class="btn btn-primary">Get Access</a>
+            </div>
+        </div>
+    </nav>
     
-    <p><strong>We eliminate the data bottleneck in ML training.</strong></p>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">🚀 Currently in Private Beta</div>
+            <h1>Make ML Training<br><span>4x Faster</span></h1>
+            <p>Quattree is a drop-in replacement for PyTorch DataLoader. Built in Rust, it eliminates the data bottleneck and keeps your GPUs fully utilized.</p>
+            <div class="hero-buttons">
+                <a href="mailto:kuatinc2026@gmail.com?subject=Quattree%20Beta%20Access" class="btn btn-primary">Request Beta Access →</a>
+                <a href="https://github.com/Kuat-Inc" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
     
-    <p>Quattree is a next-generation data format and loader built in Rust. It replaces the standard PyTorch DataLoader and NVIDIA DALI to maximize GPU utilization.</p>
+    <!-- Stats -->
+    <section class="stats" id="benchmarks">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>4x</h3>
+                    <p>Faster End-to-End Training</p>
+                </div>
+                <div class="stat-item">
+                    <h3>20x</h3>
+                    <p>Faster I/O (ImageNet)</p>
+                </div>
+                <div class="stat-item">
+                    <h3>26x</h3>
+                    <p>Faster Multimodal (Flickr30k)</p>
+                </div>
+                <div class="stat-item">
+                    <h3>2x</h3>
+                    <p>Faster than NVIDIA DALI</p>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    <h3>The Benchmarks</h3>
-    <ul>
-        <li><strong>4x Faster</strong> End-to-End Training Throughput</li>
-        <li><strong>20x Faster</strong> Data Loading (ImageNet)</li>
-        <li><strong>100% Accuracy Retention</strong> (Lossless/Natural Regularization)</li>
-        <li><strong>Zero</strong> Code Changes (Drop-in Replacement)</li>
-    </ul>
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Teams Switch to Quattree</h2>
+                <p>Zero code changes. Massive performance gains. Built for production.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Drop-In Replacement</h3>
+                    <p>Replace your DataLoader import with one line. Your existing training code works unchanged.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🦀</div>
+                    <h3>Built in Rust</h3>
+                    <p>50,000+ lines of optimized Rust. Zero-copy I/O, lock-free concurrency, memory-mapped files.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Quality Preserved</h3>
+                    <p>42.6 dB PSNR, 0.977 SSIM. Lossless mode available. No accuracy degradation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Semantic Search</h3>
+                    <p>Built-in Bloom filter enables instant semantic queries across your entire dataset.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Compact Format</h3>
+                    <p>Quaternion-based vector quantization achieves 8-32x compression with quality preservation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Native Python bindings via PyO3. Works on Linux, macOS, Windows. CUDA optional.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Code Example -->
+    <section class="code-section">
+        <div class="container">
+            <div class="code-wrapper">
+                <div>
+                    <h2 style="margin-bottom: 16px;">One-Line Integration</h2>
+                    <p style="color: var(--gray-600); margin-bottom: 24px;">Swap your DataLoader import. Everything else stays the same. Your training loop, augmentations, and model code work unchanged.</p>
+                    <a href="mailto:kuatinc2026@gmail.com?subject=Quattree%20Documentation" class="btn btn-primary">View Documentation →</a>
+                </div>
+                <div class="code-block">
+<pre><span class="comment"># Before</span>
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader
 
-    <h3>Status</h3>
-    <p>Currently in private beta with select design partners.</p>
+<span class="comment"># After</span>
+<span class="keyword">from</span> quattree <span class="keyword">import</span> DataLoader
 
-    <h3>Contact</h3>
-    <p>For enterprise inquiries or pilot access:</p>
-    <p><a href="mailto:founders@kuatlabs.com">founders@kuatlabs.com</a></p>
+<span class="comment"># Your code stays exactly the same</span>
+loader = <span class="function">DataLoader</span>(
+    dataset=<span class="string">"imagenet.qvq"</span>,
+    batch_size=<span class="number">256</span>,
+    num_workers=<span class="number">8</span>
+)
+
+<span class="keyword">for</span> batch <span class="keyword">in</span> loader:
+    outputs = model(batch)
+    loss.backward()
+    optimizer.step()</pre>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    <hr>
-    <p style="font-size: 0.8em; color: #666;">&copy; 2026 Kuat Inc. (Delaware C-Corp Pending)</p>
+    <!-- Team -->
+    <section class="team" id="team">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Team</h2>
+                <p>PhDs building the next generation of ML infrastructure.</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">👨‍🔬</div>
+                    <h3>Anthony Medellin</h3>
+                    <div class="role">CEO</div>
+                    <p>PhD in AI/ML from Texas A&M. Former DOD researcher. Expert in efficient neural architectures.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">👨‍💻</div>
+                    <h3>Tangyie Shulem Yaweni</h3>
+                    <div class="role">CTO</div>
+                    <p>PhD Candidate in Cybersecurity. ML Instructor. Specializes in systems, cryptography, and game theory.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Speed Up Training?</h2>
+            <p>Join teams already using Quattree to train models faster. Private beta spots available.</p>
+            <a href="mailto:kuatinc2026@gmail.com?subject=Quattree%20Beta%20Request&body=Hi%20Kuat%20team%2C%0A%0AI'm%20interested%20in%20Quattree%20beta%20access.%0A%0ACompany%3A%20%0AUse%20case%3A%20%0ADataset%20size%3A%20%0A%0AThanks!" class="btn btn-primary">Request Beta Access →</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-inner">
+            <div class="footer-links">
+                <a href="https://github.com/Kuat-Inc">GitHub</a>
+                <a href="mailto:kuatinc2026@gmail.com">Contact</a>
+            </div>
+            <div class="copyright">
+                © 2026 Kuat Inc. Delaware C-Corp.
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

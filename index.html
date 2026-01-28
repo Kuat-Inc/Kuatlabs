@@ -342,6 +342,13 @@
             align-items: center;
             justify-content: center;
             font-size: 2.5rem;
+            overflow: hidden;
+        }
+        
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .team-card h3 {
@@ -577,14 +584,18 @@ loader = <span class="function">DataLoader</span>(
             </div>
             <div class="team-grid">
                 <div class="team-card">
-                    <div class="team-avatar">👨‍🔬</div>
+                    <div class="team-avatar">
+                        <img src="anthony-224x224.jpg" alt="Anthony Medellin">
+                    </div>
                     <h3>Anthony Medellin</h3>
                     <div class="role">CEO</div>
                     <p>PhD in AI/ML from Texas A&M. Former DOD researcher. Expert in efficient neural architectures.</p>
                     <p style="margin-top: 12px;"><a href="mailto:anthony@kuatlabs.com" style="color: var(--accent); text-decoration: none; font-size: 1.5rem;">✉️</a></p>
                 </div>
                 <div class="team-card">
-                    <div class="team-avatar">👨‍💻</div>
+                    <div class="team-avatar">
+                        <img src="yaweni-224x224.png" alt="Tangyie Shulem Yaweni">
+                    </div>
                     <h3>Tangyie Shulem Yaweni</h3>
                     <div class="role">CTO</div>
                     <p>PhD Candidate in Cybersecurity. ML Instructor. Specializes in systems, cryptography, and game theory.</p>

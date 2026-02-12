@@ -78,17 +78,19 @@
         .container{max-width:1080px;margin:0 auto;padding:0 24px}
 
         /* NAV */
-        nav{padding:14px 0;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+        nav{padding:14px 0;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
         .nav-inner{display:flex;justify-content:space-between;align-items:center}
         .logo{font-weight:700;font-size:1.3rem;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px}
         .logo-icon{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700}
         .nav-links{display:flex;gap:24px;align-items:center}
         .nav-links a{color:var(--text-secondary);text-decoration:none;font-size:.88rem;transition:color .2s;font-weight:450}
         .nav-links a:hover,.nav-links a.active{color:var(--text)}
-        .menu-toggle{display:none;background:none;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:1.05rem;padding:6px 9px;border-radius:6px;line-height:1}
+        .menu-toggle{display:inline-flex;background:none;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:1.05rem;padding:6px 9px;border-radius:6px;line-height:1}
         .menu-toggle:hover{border-color:var(--border-hover);color:var(--text)}
-        .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 24px}
-        .mobile-menu.open{display:flex;flex-direction:column;gap:10px}
+        .menu-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:150}
+        .menu-scrim.open{opacity:1;pointer-events:auto}
+        .mobile-menu{position:fixed;top:0;right:-280px;width:260px;height:100vh;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-left:1px solid var(--border);padding:80px 24px 24px;display:flex;flex-direction:column;gap:10px;transition:right .2s;z-index:160}
+        .mobile-menu.open{right:0}
         .mobile-menu a{color:var(--text-secondary);text-decoration:none;font-size:.9rem;padding:6px 0}
         .mobile-menu a:hover{color:var(--text)}
         #themeToggle{background:none;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:1rem;padding:5px 7px;border-radius:6px;transition:all .2s;line-height:1}
@@ -115,6 +117,8 @@
         .product-card p{font-size:.88rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.65}
         .product-card .stat{font-size:.78rem;color:var(--text-muted);font-weight:500;letter-spacing:.3px}
         .product-card .stat strong{color:var(--accent);font-weight:600}
+        .product-card .card-read-more{display:inline-flex;margin-top:14px;padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);font-size:.75rem;text-decoration:none}
+        .product-card:hover .card-read-more{color:var(--accent);border-color:var(--accent)}
         .product-card .arrow{position:absolute;bottom:28px;right:28px;color:var(--accent);font-size:1.2rem;opacity:0;transition:all .3s;transform:translateX(-4px)}
         .product-card:hover .arrow{opacity:1;transform:translateX(0)}
 
@@ -150,7 +154,7 @@
         .footer-links a:hover{color:var(--text)}
         .copyright{color:var(--text-muted);font-size:.78rem}
 
-        @media(max-width:768px){.nav-links{gap:10px}.nav-links .hide-mobile{display:none}.menu-toggle{display:inline-flex}.nav-links .btn-sm{display:none}.hero{padding:80px 0 60px;min-height:auto}.products-row{grid-template-columns:1fr}}
+        @media(max-width:768px){.nav-links{gap:10px}.nav-links .hide-mobile{display:none}.nav-links .btn-sm{display:none}.hero{padding:80px 0 60px;min-height:auto}.products-row{grid-template-columns:1fr}}
         html{scroll-behavior:smooth}
         ::selection{background:var(--accent);color:white}
     </style>
@@ -175,6 +179,7 @@
                 <a href="javascript:void(0)" data-tally-open="dW05pr" data-tally-width="500" data-tally-emoji-text="👋" data-tally-emoji-animation="wave" class="btn btn-primary btn-sm">Get Access</a>
             </div>
         </div>
+        <div id="menuScrim" class="menu-scrim"></div>
         <div id="mobileMenu" class="mobile-menu">
             <a href="kuattree.html">Kuattree</a>
             <a href="zerosight.html">ZeroSight</a>
@@ -193,6 +198,7 @@
                     <h3>Kuattree</h3>
                     <p>Next-gen data format that eliminates the I/O bottleneck. Drop-in replacement for PyTorch DataLoader.</p>
                     <div class="stat"><strong>4×</strong> faster training &nbsp;·&nbsp; <strong>20×</strong> faster I/O</div>
+                    <span class="card-read-more">Read more</span>
                     <span class="arrow">→</span>
                 </a>
                 <a href="zerosight.html" class="product-card">
@@ -200,6 +206,7 @@
                     <h3>ZeroSight</h3>
                     <p>Blind computation protocol. Process encrypted data at production speed — without ever decrypting it.</p>
                     <div class="stat"><strong>0.4ms</strong> latency &nbsp;·&nbsp; <strong>165,000×</strong> faster than FHE</div>
+                    <span class="card-read-more">Read more</span>
                     <span class="arrow">→</span>
                 </a>
             </div>
@@ -267,24 +274,23 @@ document.getElementById('themeToggle').addEventListener('click',()=>applyTheme(!
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!localStorage.getItem('kuat-theme'))applyTheme(e.matches)});
 const menuToggle=document.getElementById('menuToggle');
 const mobileMenu=document.getElementById('mobileMenu');
+const menuScrim=document.getElementById('menuScrim');
 if(menuToggle&&mobileMenu){
+    const closeMenu=()=>{
+        mobileMenu.classList.remove('open');
+        menuScrim&&menuScrim.classList.remove('open');
+        menuToggle.textContent='☰';
+        menuToggle.setAttribute('aria-expanded','false');
+    };
     menuToggle.addEventListener('click',()=>{
-        const open=mobileMenu.classList.toggle('open');
+        const open=!mobileMenu.classList.contains('open');
+        mobileMenu.classList.toggle('open',open);
+        menuScrim&&menuScrim.classList.toggle('open',open);
         menuToggle.textContent=open?'✕':'☰';
         menuToggle.setAttribute('aria-expanded',open?'true':'false');
     });
-    mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
-        mobileMenu.classList.remove('open');
-        menuToggle.textContent='☰';
-        menuToggle.setAttribute('aria-expanded','false');
-    }));
-    window.addEventListener('resize',()=>{
-        if(window.innerWidth>768){
-            mobileMenu.classList.remove('open');
-            menuToggle.textContent='☰';
-            menuToggle.setAttribute('aria-expanded','false');
-        }
-    });
+    mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+    menuScrim&&menuScrim.addEventListener('click',closeMenu);
 }
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;cx=W/2;cy=H/2}
 window.addEventListener('resize',resize);resize();

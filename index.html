@@ -246,7 +246,8 @@
                 <h2>Ready to Build?</h2>
                 <p>Whether you need faster training or private computation, we have the infrastructure.</p>
                 <div class="cta-buttons">
-                    <a href="javascript:void(0)" data-tally-open="dW05pr" data-tally-width="500" data-tally-emoji-text="👋" data-tally-emoji-animation="wave" class="btn btn-primary">Request Access →</a>
+                    <a href="javascript:void(0)" class="btn btn-primary home-open-form" data-product="Kuattree" data-form-id="dW05pr" data-source="home_ready_kuattree">Try Kuattree →</a>
+                    <a href="javascript:void(0)" class="btn btn-primary home-open-form" data-product="ZeroSight" data-form-id="2EN5Oj" data-source="home_ready_zerosight">Try ZeroSight →</a>
                     <a href="https://github.com/Kuat-Inc" target="_blank" class="btn btn-outline">GitHub →</a>
                 </div>
             </div>
@@ -317,6 +318,28 @@ for(let q=0;q<4;q++){let a=time*.5+q*Math.PI/2,r=8+Math.sin(time*.8+q)*2,x=cx+Ma
 requestAnimationFrame(frame)}
 frame();
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}})});
+
+document.querySelectorAll('.home-open-form').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+        e.preventDefault();
+        const product=btn.dataset.product||'Unknown';
+        const formId=btn.dataset.formId||'dW05pr';
+        const source=btn.dataset.source||'home_ready_unknown';
+        if(typeof Tally!=='undefined'&&typeof Tally.openPopup==='function'){
+            Tally.openPopup(formId,{
+                layout:'modal',
+                width:500,
+                hiddenFields:{
+                    product,
+                    page:source
+                }
+            });
+            return;
+        }
+        const direct=`https://tally.so/r/${formId}?product=${encodeURIComponent(product)}&page=${encodeURIComponent(source)}`;
+        window.open(direct,'_blank','noopener');
+    });
+});
 </script>
 </body>
 </html>

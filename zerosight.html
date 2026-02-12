@@ -27,6 +27,12 @@
         .nav-links{display:flex;gap:24px;align-items:center}
         .nav-links a{color:var(--text-secondary);text-decoration:none;font-size:.88rem;transition:color .2s;font-weight:450}
         .nav-links a:hover,.nav-links a.active{color:var(--text)}
+        .menu-toggle{display:none;background:none;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:1.05rem;padding:6px 9px;border-radius:6px;line-height:1}
+        .menu-toggle:hover{border-color:var(--border-hover);color:var(--text)}
+        .mobile-menu{display:none;position:absolute;top:100%;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 24px}
+        .mobile-menu.open{display:flex;flex-direction:column;gap:10px}
+        .mobile-menu a{color:var(--text-secondary);text-decoration:none;font-size:.9rem;padding:6px 0}
+        .mobile-menu a:hover{color:var(--text)}
         #themeToggle{background:none;border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:1rem;padding:5px 7px;border-radius:6px;transition:all .2s;line-height:1}
         #themeToggle:hover{border-color:var(--border-hover);color:var(--text)}
         .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:8px;font-weight:500;text-decoration:none;transition:all .2s;font-size:.88rem;cursor:pointer;border:none}
@@ -38,6 +44,9 @@
 
         .product-hero{padding:120px 0 80px;text-align:center}
         .product-hero .badge{display:inline-block;padding:5px 14px;border-radius:100px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px;background:var(--accent-glow);color:var(--accent);border:1px solid var(--border)}
+        .badge-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+        .badge-read-more{padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);font-size:.75rem;text-decoration:none}
+        .badge-read-more:hover{color:var(--accent);border-color:var(--accent)}
         .product-hero h1{font-size:clamp(2.2rem,4.5vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:18px;letter-spacing:-.03em}
         .product-hero p{font-size:1.1rem;color:var(--text-secondary);max-width:540px;margin:0 auto 36px;line-height:1.7}
         .product-hero .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
@@ -57,6 +66,14 @@
         .feature-icon{width:42px;height:42px;background:var(--accent-glow);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
         .feature-card h3{font-size:1.05rem;margin-bottom:7px}
         .feature-card p{color:var(--text-secondary);font-size:.87rem;line-height:1.6}
+
+        /* WORKFLOW */
+        .workflow-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:26px}
+        .workflow-step{padding:18px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;position:relative}
+        .workflow-step h3{font-size:.95rem;margin-bottom:6px}
+        .workflow-step p{color:var(--text-secondary);font-size:.82rem;line-height:1.55}
+        .workflow-step .step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:var(--accent-glow);color:var(--accent);font-size:.75rem;font-weight:700;margin-bottom:8px;border:1px solid var(--border)}
+        .workflow-step:not(:last-child)::after{content:'→';position:absolute;right:-10px;top:46%;transform:translateY(-50%);color:var(--text-muted);font-size:1rem}
 
         .divider{height:1px;background:var(--border);max-width:140px;margin:0 auto}
 
@@ -91,7 +108,7 @@
         .footer-links a:hover{color:var(--text)}
         .copyright{color:var(--text-muted);font-size:.78rem}
 
-        @media(max-width:768px){.nav-links{gap:14px}.nav-links .hide-mobile{display:none}.product-hero{padding:80px 0 50px}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:768px){.nav-links{gap:10px}.nav-links .hide-mobile{display:none}.menu-toggle{display:inline-flex}.nav-links .btn-sm{display:none}.product-hero{padding:80px 0 50px}.stats-grid{grid-template-columns:repeat(2,1fr)}.workflow-grid{grid-template-columns:1fr}.workflow-step:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-12px;transform:translateX(-50%)}}
         html{scroll-behavior:smooth}
         ::selection{background:var(--accent);color:white}
     </style>
@@ -111,19 +128,29 @@
                 <a href="kuattree.html" class="hide-mobile">Kuattree</a>
                 <a href="zerosight.html" class="active hide-mobile">ZeroSight</a>
                 <button id="themeToggle" title="Toggle theme">☀️</button>
-                <a href="javascript:void(0)" data-tally-open="dW05pr" data-tally-width="500" data-tally-emoji-text="👋" data-tally-emoji-animation="wave" data-tally-hidden="product=ZeroSight" class="btn btn-primary btn-sm">Get Access</a>
+                <button id="menuToggle" class="menu-toggle" title="Toggle menu" aria-label="Toggle menu" aria-expanded="false">☰</button>
+                <a href="javascript:void(0)" class="btn btn-primary btn-sm zs-open-form" data-source="zerosight_nav">Get Access</a>
             </div>
+        </div>
+        <div id="mobileMenu" class="mobile-menu">
+            <a href="/">Home</a>
+            <a href="kuattree.html">Kuattree</a>
+            <a href="zerosight.html">ZeroSight</a>
+            <a href="javascript:void(0)" class="zs-open-form" data-source="zerosight_mobile_menu">Get Access</a>
         </div>
     </nav>
 
     <!-- Hero -->
     <section class="product-hero">
         <div class="container">
-            <div class="badge">ZeroSight</div>
+            <div class="badge-row">
+                <div class="badge">ZeroSight</div>
+                <a href="#comparison" class="badge-read-more">Read more</a>
+            </div>
             <h1>Compute on Data<br>You Never See</h1>
             <p>Blind computation protocol. Run ML inference, financial screening, and cryptographic proofs on encrypted data at production speed. LWE-hard security. No special hardware.</p>
             <div class="hero-actions">
-                <a href="javascript:void(0)" data-tally-open="dW05pr" data-tally-width="500" data-tally-hidden="product=ZeroSight" class="btn btn-primary">Request Pilot →</a>
+                <a href="javascript:void(0)" class="btn btn-primary zs-open-form" data-source="zerosight_hero">Request Pilot →</a>
                 <a href="#comparison" class="btn btn-outline">See Comparison →</a>
             </div>
         </div>
@@ -179,6 +206,40 @@
                     <p>Runs on any CPU. No Intel SGX, no FPGAs, no GPUs required.</p>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Workflow (High-Level) -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How ZeroSight Works</h2>
+                <p>High-level workflow: practical privacy without exposing internal mechanisms.</p>
+            </div>
+            <div class="workflow-grid">
+                <div class="workflow-step">
+                    <div class="step">1</div>
+                    <h3>Client Sends Protected Input</h3>
+                    <p>Your application submits a protected request instead of sharing raw sensitive data directly.</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step">2</div>
+                    <h3>ZeroSight Computes</h3>
+                    <p>The service performs the required computation in a privacy-preserving compute path.</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step">3</div>
+                    <h3>Result Returns Fast</h3>
+                    <p>You receive a usable output for product decisions and automation with production-friendly latency.</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step">4</div>
+                    <h3>Audit & Integrate</h3>
+                    <p>Teams validate policy fit, operational metrics, and rollout readiness for a pilot-to-production path.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -297,7 +358,7 @@
                 <h2>See It In Action</h2>
                 <p>ZeroSight is in private pilot. We work with teams shipping privacy-sensitive workloads at production scale.</p>
                 <div class="cta-buttons">
-                    <a href="javascript:void(0)" data-tally-open="dW05pr" data-tally-width="500" data-tally-emoji-text="👋" data-tally-emoji-animation="wave" data-tally-hidden="product=ZeroSight" class="btn btn-primary">Request Pilot →</a>
+                    <a href="javascript:void(0)" class="btn btn-primary zs-open-form" data-source="zerosight_bottom_cta">Request Pilot →</a>
                     <a href="/#team" class="btn btn-outline">Meet the Team →</a>
                 </div>
             </div>
@@ -325,6 +386,27 @@ function applyTheme(d){isDark=d;document.documentElement.setAttribute('data-them
 applyTheme(detectTheme());
 document.getElementById('themeToggle').addEventListener('click',()=>applyTheme(!isDark));
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!localStorage.getItem('kuat-theme'))applyTheme(e.matches)});
+const menuToggle=document.getElementById('menuToggle');
+const mobileMenu=document.getElementById('mobileMenu');
+if(menuToggle&&mobileMenu){
+    menuToggle.addEventListener('click',()=>{
+        const open=mobileMenu.classList.toggle('open');
+        menuToggle.textContent=open?'✕':'☰';
+        menuToggle.setAttribute('aria-expanded',open?'true':'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+        mobileMenu.classList.remove('open');
+        menuToggle.textContent='☰';
+        menuToggle.setAttribute('aria-expanded','false');
+    }));
+    window.addEventListener('resize',()=>{
+        if(window.innerWidth>768){
+            mobileMenu.classList.remove('open');
+            menuToggle.textContent='☰';
+            menuToggle.setAttribute('aria-expanded','false');
+        }
+    });
+}
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;cx=W/2;cy=H/2}
 window.addEventListener('resize',resize);resize();
 
@@ -349,6 +431,26 @@ for(let q=0;q<4;q++){let a=time*.5+q*Math.PI/2,r=8+Math.sin(time*.8+q)*2,x=cx+Ma
 requestAnimationFrame(frame)}
 frame();
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}})});
+
+document.querySelectorAll('.zs-open-form').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+        e.preventDefault();
+        const source=btn.dataset.source||'zerosight_unknown';
+        if(typeof Tally!=='undefined'&&typeof Tally.openPopup==='function'){
+            Tally.openPopup('2EN5Oj',{
+                layout:'modal',
+                width:500,
+                hiddenFields:{
+                    product:'ZeroSight',
+                    page:source
+                }
+            });
+            return;
+        }
+        const direct=`https://tally.so/r/2EN5Oj?product=ZeroSight&page=${encodeURIComponent(source)}`;
+        window.open(direct,'_blank','noopener');
+    });
+});
 </script>
 </body>
 </html>
